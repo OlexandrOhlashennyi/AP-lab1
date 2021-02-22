@@ -6,57 +6,61 @@
 #define MAXmark 10
 #define MAXstd 50
 
-char alphabetB[] = { "АБВҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ" };
+char alphabetB[] = { "АБВҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ" };  //масив українських символів, для сортування
 
-int n = 0, markn;
-
-typedef struct student {
-	char name[MAXname];
-	double mark[MAXmark];
+typedef struct student {		//оголошення структури
+	char name[MAXname];			//ім'я студента
+	double mark[MAXmark];		//масив оцінок студента
 } stud;
 
-stud students[MAXstd];
+void inputStudents();			//ф-ія для вводу даних про студентів
+void printSheets();				//ф-ія виведення таблиці
+void printStudent(stud*, int);	//ф-ія виведення одного студента
+void sortStudents();			//ф-ія сортування масиву сутдентів
+double mark(stud);				//ф-ія обчислення середнього балу
 
-void inputStudents(stud[]);
-void printsheets();
-void printStudent(stud*, int);
-void sortStudents(stud[]);
-double mark(stud);
+stud students[MAXstd];			//масив студентів
+int stn, markn;					//кількість студентів та оцінок
 
 int main() {
 	system("chcp 1251"); system("cls");
 	
+	/*Введення*/
 	printf("Введіть кількість оцінок: ");
 	scanf_s("%d", &markn);
 	printf("Вводьте дані про студентів(кінець -- порожній рядок):\n");
-	inputStudents(students);
+	inputStudents();
 
+	/*Виведення таблиць*/
 	printf("\n\n\tВведені дані:\n");
-	printsheets();
-	sortStudents(students);
+	printSheets();
+	sortStudents();
 	printf("\n\n\tСписок, відсортований за абеткою:\n");
-	printsheets();
+	printSheets();
 
-	int firstID = 0, secondID = 0, i;
-	double firstMark = 0, secondMark = 0, temp;
-	for (i = 0; i < n; i++) {
+	/*Пошук двох кращих*/
+	int firstID = 0, secondID = 0, i;			//індекси кращих студентів
+	double firstMark = 0, secondMark = 0, temp;	
+	for (i = 0; i < stn; i++) {					
 		temp = mark(students[i]);
-		if (temp > firstMark) {
-			secondID = firstID;
-			secondMark = firstMark;
-			firstID = i;
-			firstMark = temp;
-
-		}
-		else if (temp > secondMark) {
-			secondID = i;
-			secondMark = temp;
+		if (temp > firstMark) {					
+			secondID = firstID;					
+			secondMark = firstMark;				
+			firstID = i;						
+			firstMark = temp;					
+												
+		} else if (temp > secondMark) {			
+			secondID = i;						
+			secondMark = temp;					
 		}
 	}
 
+	/*Виведення двох кращих*/
 	printf("\n\n\tДвоє кращих:\n");
 	printStudent(&students[firstID], 0);
+	printf("\tСередній бал -- %lf", mark(students[firstID]));
 	printStudent(&students[secondID], 1);
+	printf("\tСередній бал -- %lf", mark(students[secondID]));
 	printf("\n\n");
 	system("pause");
 	return 0;
@@ -69,47 +73,48 @@ double mark(stud st) {
 	return sum / markn;
 }
 
-void inputStudents(stud[]) {
+void inputStudents() {
 	char input_name[MAXname] = "";
 	int i;
 	do {
 		rewind(stdin);
 		printf("Введіть ім'я студента: ");
-		gets_s(input_name);
-		if (strcmp(input_name, "") == 0)
+		gets_s(input_name);						//записуємо у буферний рядок
+		if (strcmp(input_name, "") == 0)		//Перевіряємо чи це не порожній рядок
 			break;
-		strcpy(students[n].name, input_name);
+		strcpy(students[stn].name, input_name);	//копіюємо у ім'я студента
 		printf("Введіть оіцнки: ");
 		for (i = 0; i < markn; i++) {
-			scanf_s("%lf", &students[n].mark[i]);
+			scanf_s("%lf", &students[stn].mark[i]);	//записуємо оцінки студента
 		}
-	} while (++n < MAXstd);
+	} while (++stn < MAXstd);
 }
 
-void printsheets() {
+void printSheets() {
 	stud* ptrstudend;
 	int i;
-	for (i = 0; i < 4 + MAXname + 10 * markn; i++) printf("_");
-	for (ptrstudend = students, i = 0; i < n; i++, ptrstudend++) {
-		printStudent(ptrstudend, i);
+	for (i = 0; i < 6 + MAXname + 10 * markn; i++) printf("_");		//рамка таблиці
+	for (ptrstudend = students, i = 0; i < stn; i++, ptrstudend++) {
+		printStudent(ptrstudend, i);	//виводимо дані заданого студента
 	}
 	printf("\n");
-	for (i = 0; i < 4 + MAXname + 10 * markn; i++) printf("_");
+	for (i = 0; i < 6 + MAXname + 10 * markn; i++) printf("_");
 }
 
 void printStudent(stud *st, int i) {
 	int j;
-	printf("\n%2d|%-30s|", i + 1, st->name);
-	for (j = 0; j < markn; j++) printf("%9.2lf|", st->mark[j]);
+	printf("\n|%3d|%-30s|", i + 1, st->name);						//виводимо ім'я
+	for (j = 0; j < markn; j++) printf("%9.2lf|", *st->mark+j);		//виводимо список оцінок
 }
 
-void sortStudents(stud st[]) {
+void sortStudents() {
 	stud *ptrstudend, temp;
 	int i;
-	for (i = 0; i < n; i++) {
-		for (ptrstudend = st; ptrstudend + 1 < st + n - i; ptrstudend++) {
-			if (strchr(alphabetB, ptrstudend->name[0]) > strchr(alphabetB, (ptrstudend + 1)->name[0])) {
-				temp = *ptrstudend;
+	/*Бульбашкове сортування*/
+	for (i = 0; i < stn-1; i++) {
+		for (ptrstudend = students; ptrstudend + 1 < students + stn - i; ptrstudend++) {
+			if (strchr(alphabetB, ptrstudend->name[0]) > strchr(alphabetB, (ptrstudend + 1)->name[0])) { //порівнюємо 				
+				temp = *ptrstudend;													//порядкові номери перших символів імені
 				*ptrstudend = *(ptrstudend + 1);
 				*(ptrstudend + 1) = temp;
 			}
