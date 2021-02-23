@@ -6,7 +6,8 @@
 #define MAXmark 10
 #define MAXstd 50
 
-char alphabetB[] = { "АБВҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ" };  //масив українських символів, для сортування
+char alphabetB[] = { "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ" };  //масив українських символів, для сортування
+char alphabetS[] = { "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя" };
 
 typedef struct student {		//оголошення структури
 	char name[MAXname];			//ім'я студента
@@ -18,6 +19,7 @@ void printSheets();				//ф-ія виведення таблиці
 void printStudent(stud*, int);	//ф-ія виведення одного студента
 void sortStudents();			//ф-ія сортування масиву сутдентів
 double mark(stud);				//ф-ія обчислення середнього балу
+int stringcomparison(char*, char*);
 
 stud students[MAXstd];			//масив студентів
 int stn, markn;					//кількість студентів та оцінок
@@ -113,7 +115,7 @@ void sortStudents() {
 	/*Бульбашкове сортування*/
 	for (i = 0; i < stn-1; i++) {
 		for (ptrstudend = students; ptrstudend + 1 < students + stn - i; ptrstudend++) {
-			if (strchr(alphabetB, ptrstudend->name[0]) > strchr(alphabetB, (ptrstudend + 1)->name[0])) { //порівнюємо 				
+			if (stringcomparison(ptrstudend->name, (ptrstudend + 1)->name) > 0) { //порівнюємо 				
 				temp = *ptrstudend;													//порядкові номери перших символів імені
 				*ptrstudend = *(ptrstudend + 1);
 				*(ptrstudend + 1) = temp;
@@ -122,7 +124,25 @@ void sortStudents() {
 	}
 }
 
+int stringcomparison(char* s1, char* s2) {
+	char a, b;
+	while (*s1) {
+		/*Якщо символ належить масиву великих літер, то присвоюємо йому аналогічну малу літеру*/
+		if (strchr(alphabetB, *s1) != NULL) a = alphabetS[strchr(alphabetB, *s1) - alphabetB];
+		else a = *s1;
+		if (strchr(alphabetB, *s2) != NULL) b = alphabetS[strchr(alphabetB, *s2) - alphabetB];
+		else b = *s2;
+		if (a != b) break;
+		s1++;
+		s2++;
+		printf("%c", a);
+	}
+	return strchr(alphabetS, a) - strchr(alphabetS, b);
+}
+
 /*4
+Яремчук Дарій
+85 42 95 63
 Войчак Катерина
 78 88 96 84
 Мірза Дарина
