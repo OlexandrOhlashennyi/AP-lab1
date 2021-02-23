@@ -6,8 +6,8 @@
 #define MAXmark 10
 #define MAXstd 50
 
-char alphabetB[] = { "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ" };  //масив українських символів, для сортування
-char alphabetS[] = { "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя" };
+char alphabetB[] = { "АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя" };  //масиви українських символів, для сортування
+//char alphabetS[] = { "абвгґдеєжзиіїйклмнопрстуфхцчшщьюя" };
 
 typedef struct student {		//оголошення структури
 	char name[MAXname];			//ім'я студента
@@ -22,7 +22,7 @@ double mark(stud);				//ф-ія обчислення середнього бал
 int stringcomparison(char*, char*);
 
 stud students[MAXstd];			//масив студентів
-int stn, markn;					//кількість студентів та оцінок
+int stn, markn;					//реальна кількість студентів та оцінок
 
 int main() {
 	system("chcp 1251"); system("cls");
@@ -33,7 +33,7 @@ int main() {
 	printf("Вводьте дані про студентів(кінець -- порожній рядок):\n");
 	inputStudents();
 
-	/*Виведення таблиць*/
+	/*Виведення таблиць та сортування*/
 	printf("\n\n\tВведені дані:\n");
 	printSheets();
 	sortStudents();
@@ -81,14 +81,15 @@ void inputStudents() {
 	do {
 		rewind(stdin);
 		printf("Введіть ім'я студента: ");
-		gets_s(input_name);						//записуємо у буферний рядок
-		if (strcmp(input_name, "") == 0)		//Перевіряємо чи це не порожній рядок
+		gets_s(input_name);							//записуємо у буферний рядок
+		if (strcmp(input_name, "") == 0)			//Перевіряємо чи це не порожній рядок
 			break;
-		strcpy(students[stn].name, input_name);	//копіюємо у ім'я студента
+		strcpy(students[stn].name, input_name);	    //копіюємо у ім'я студента
 		printf("Введіть оіцнки: ");
 		for (i = 0; i < markn; i++) {
 			scanf_s("%lf", &students[stn].mark[i]);	//записуємо оцінки студента
 		}
+		printf("\n");
 	} while (++stn < MAXstd);
 }
 
@@ -115,8 +116,8 @@ void sortStudents() {
 	/*Бульбашкове сортування*/
 	for (i = 0; i < stn-1; i++) {
 		for (ptrstudend = students; ptrstudend + 1 < students + stn - i; ptrstudend++) {
-			if (stringcomparison(ptrstudend->name, (ptrstudend + 1)->name) > 0) { //порівнюємо 				
-				temp = *ptrstudend;													//порядкові номери перших символів імені
+			if (stringcomparison(ptrstudend->name, (ptrstudend + 1)->name) > 0) {	//порівнюємо 				
+				temp = *ptrstudend;											//порядкові номери перших символів імені
 				*ptrstudend = *(ptrstudend + 1);
 				*(ptrstudend + 1) = temp;
 			}
@@ -127,17 +128,11 @@ void sortStudents() {
 int stringcomparison(char* s1, char* s2) {
 	char a, b;
 	while (*s1) {
-		/*Якщо символ належить масиву великих літер, то присвоюємо йому аналогічну малу літеру*/
-		if (strchr(alphabetB, *s1) != NULL) a = alphabetS[strchr(alphabetB, *s1) - alphabetB];
-		else a = *s1;
-		if (strchr(alphabetB, *s2) != NULL) b = alphabetS[strchr(alphabetB, *s2) - alphabetB];
-		else b = *s2;
-		if (a != b) break;
+		if (*s1 != *s2) break;
 		s1++;
 		s2++;
-		printf("%c", a);
 	}
-	return strchr(alphabetS, a) - strchr(alphabetS, b);
+	return strchr(alphabetB, *s1) - strchr(alphabetB, *s2);
 }
 
 /*4
